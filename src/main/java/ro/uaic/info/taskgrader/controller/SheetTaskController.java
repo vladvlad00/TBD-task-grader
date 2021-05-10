@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.AsyncRestOperations;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ro.uaic.info.taskgrader.entity.Sheet;
@@ -43,11 +44,16 @@ public class SheetTaskController {
         var restTemplate=new RestTemplate();
         String url=BASE_URL+"task/"+taskId;
         System.out.println(url);
-        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+        ResponseEntity<String> response;
+        try{
+            response= restTemplate.getForEntity(url, String.class);
+        }catch(HttpStatusCodeException e){
+            return ResponseEntity.notFound().build();
+        }
+
         if(response.getStatusCode().is4xxClientError()){
             return ResponseEntity.badRequest().build();
         }
-        ///throws 500 instead idk y
 
         Optional<Sheet> sheetOpt=sheetRepository.findById(sheetId);
 
