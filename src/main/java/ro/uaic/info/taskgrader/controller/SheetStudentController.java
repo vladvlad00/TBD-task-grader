@@ -43,8 +43,14 @@ public class SheetStudentController {
         var restTemplate = new RestTemplate();
         String url = BASE_URL + "student/" + studentId;
         System.out.println(url);
-        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-
+        ResponseEntity<String> response;
+        
+        try{
+            response = restTemplate.getForEntity(url, String.class);
+        }catch(HttpStatusCodeException e){
+            return ResponseEntity.notFound().build();
+        }
+            
         if (response.getStatusCode().is4xxClientError()) {
             return ResponseEntity.badRequest().build();
         }
