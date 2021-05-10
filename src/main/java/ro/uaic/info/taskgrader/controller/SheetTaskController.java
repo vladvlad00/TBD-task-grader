@@ -43,7 +43,6 @@ public class SheetTaskController {
 
         var restTemplate=new RestTemplate();
         String url=BASE_URL+"task/"+taskId;
-        System.out.println(url);
         ResponseEntity<String> response;
         try{
             response= restTemplate.getForEntity(url, String.class);
@@ -85,9 +84,6 @@ public class SheetTaskController {
 
         if(((Collection<?>)foundSheetTask).size()==0)
             return ResponseEntity.notFound().build();
-
-        var ans=new ArrayList<Map<String,Object>>();
-
         return ResponseEntity.ok(foundSheetTask);
     }
 
