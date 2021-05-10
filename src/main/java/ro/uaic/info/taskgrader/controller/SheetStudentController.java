@@ -42,7 +42,7 @@ public class SheetStudentController {
 
         var restTemplate = new RestTemplate();
         String url = BASE_URL + "student/" + studentId;
-        System.out.println(url);
+        
         ResponseEntity<String> response;
         
         try{
@@ -86,8 +86,6 @@ public class SheetStudentController {
         if (((Collection<?>) foundSheetStudent).size() == 0)
             return ResponseEntity.notFound().build();
 
-        var ans = new ArrayList<Map<String, Object>>();
-
         return ResponseEntity.ok(foundSheetStudent);
     }
 
@@ -97,8 +95,6 @@ public class SheetStudentController {
 
         if (((Collection<?>) foundSheetStudent).size() == 0)
             return ResponseEntity.notFound().build();
-
-        var ans = new ArrayList<Map<String, Object>>();
 
         return ResponseEntity.ok(foundSheetStudent);
     }
