@@ -103,9 +103,7 @@ public class SheetStudentController {
     }
 
     @DeleteMapping("/sheet/{sheetId}/student/{studentId}")
-    public ResponseEntity<SheetStudent> deleteSheetTask(@RequestBody Map<String, Integer> sheetTask) {
-        Integer sheetId = sheetTask.get("sheetId");
-        Integer studentId = sheetTask.get("studentId");
+    public ResponseEntity<SheetStudent> deleteSheetStudent(@PathVariable Integer sheetId, @PathVariable Integer studentId) {
 
         if (sheetId == null || studentId == null) {
             return ResponseEntity.badRequest().build();
