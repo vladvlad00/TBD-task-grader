@@ -95,7 +95,7 @@ public class GradeController {
         return ResponseEntity.created(uri).body(gradeObj);
     }
 
-    @GetMapping("/{taskId}/{studentId}")
+    @GetMapping("/task/{taskId}/student/{studentId}")
     private ResponseEntity<Grade> listGradesByTaskStudentId(@PathVariable Integer taskId, @PathVariable Integer studentId) {
         Optional<Grade> gradeOpt = gradeRepository.findById(new GradePK(taskId, studentId));
         if (gradeOpt.isEmpty())
@@ -126,7 +126,7 @@ public class GradeController {
         return ResponseEntity.ok(foundGrades);
     }
 
-    @PutMapping("/{taskIdPath}/{studentIdPath}")
+    @PutMapping("/task/{taskIdPath}/student/{studentIdPath}")
     private ResponseEntity<Grade> updateGrade(@RequestBody Map<String, String> gradeJson,
                                               @PathVariable Integer taskIdPath, @PathVariable Integer studentIdPath) {
         Integer studentId;
@@ -157,7 +157,7 @@ public class GradeController {
         return ResponseEntity.ok(gradeObj);
     }
 
-    @DeleteMapping("/{taskId}/{studentId}")
+    @DeleteMapping("/task/{taskId}/student/{studentId}")
     private ResponseEntity<Grade> deleteGrade(@PathVariable Integer taskId, @PathVariable Integer studentId) {
         GradePK id = new GradePK(taskId, studentId);
         if (gradeRepository.findById(id).isEmpty())

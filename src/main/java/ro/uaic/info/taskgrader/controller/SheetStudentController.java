@@ -82,9 +82,9 @@ public class SheetStudentController {
         return ResponseEntity.ok(foundSheetStudents);
     }
 
-    @GetMapping("/sheet/{sheet_id}")
-    public ResponseEntity<Iterable<SheetStudent>> listBySheetId(@PathVariable Integer sheet_id) {
-        var foundSheetStudent = sheetStudentRepository.findAllByIdSheetId(sheet_id);
+    @GetMapping("/sheet/{sheetId}")
+    public ResponseEntity<Iterable<SheetStudent>> listBySheetId(@PathVariable Integer sheetId) {
+        var foundSheetStudent = sheetStudentRepository.findAllByIdSheetId(sheetId);
 
         if (((Collection<?>) foundSheetStudent).size() == 0)
             return ResponseEntity.notFound().build();
@@ -92,9 +92,9 @@ public class SheetStudentController {
         return ResponseEntity.ok(foundSheetStudent);
     }
 
-    @GetMapping("/student/{student_id}")
-    public ResponseEntity<Iterable<SheetStudent>> listByStudentId(@PathVariable Integer student_id) {
-        var foundSheetStudent = sheetStudentRepository.findAllByIdStudentId(student_id);
+    @GetMapping("/student/{studentId}")
+    public ResponseEntity<Iterable<SheetStudent>> listByStudentId(@PathVariable Integer studentId) {
+        var foundSheetStudent = sheetStudentRepository.findAllByIdStudentId(studentId);
 
         if (((Collection<?>) foundSheetStudent).size() == 0)
             return ResponseEntity.notFound().build();
@@ -102,7 +102,7 @@ public class SheetStudentController {
         return ResponseEntity.ok(foundSheetStudent);
     }
 
-    @DeleteMapping("/")
+    @DeleteMapping("/sheet/{sheetId}/student/{studentId}")
     public ResponseEntity<SheetStudent> deleteSheetTask(@RequestBody Map<String, Integer> sheetTask) {
         Integer sheetId = sheetTask.get("sheetId");
         Integer studentId = sheetTask.get("studentId");

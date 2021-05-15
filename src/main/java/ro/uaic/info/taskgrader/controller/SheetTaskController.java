@@ -78,19 +78,18 @@ public class SheetTaskController {
         return ResponseEntity.ok(foundSheetTasks);
     }
 
-    @GetMapping("/sheet/{sheet_id}")
-    public ResponseEntity<Iterable<SheetTask>> listBySheetId(@PathVariable Integer sheet_id){
-        var foundSheetTask=sheetTaskRepository.findAllByIdSheetId(sheet_id);
+    @GetMapping("/sheet/{sheetId}")
+    public ResponseEntity<Iterable<SheetTask>> listBySheetId(@PathVariable Integer sheetId){
+        var foundSheetTask=sheetTaskRepository.findAllByIdSheetId(sheetId);
 
         if(((Collection<?>)foundSheetTask).size()==0)
             return ResponseEntity.notFound().build();
         return ResponseEntity.ok(foundSheetTask);
     }
 
-    @DeleteMapping("/")
-    public ResponseEntity<SheetTask> deleteSheetTask(@RequestBody Map<String, Integer> sheetTask){
-        Integer sheetId=sheetTask.get("sheetId");
-        Integer taskId=sheetTask.get("taskId");
+    @DeleteMapping("/sheet/{sheetId}/task/{taskId}")
+    public ResponseEntity<SheetTask> deleteSheetTask(@PathVariable Integer sheetId, @PathVariable Integer taskId){
+
 
         if(sheetId==null||taskId==null){
             return ResponseEntity.badRequest().build();
