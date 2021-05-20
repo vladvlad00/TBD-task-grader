@@ -2,10 +2,6 @@ package ro.uaic.info.taskgrader.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,40 +14,50 @@ import ro.uaic.info.taskgrader.entity.GradePK;
 import ro.uaic.info.taskgrader.repository.GradeRepository;
 
 import java.net.URI;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/grade")
-public class GradeController {
+public class GradeController
+{
     @Autowired
     private GradeRepository gradeRepository;
 
     // TODO Trebuie facut ceva frumos aici, nu hardcodat
     private final String BASE_URL = "https://tbd-dev.herokuapp.com/";
 
-    private Integer calculateGrade(Integer studentId, Integer taskId) {
+    private Integer calculateGrade(Integer studentId, Integer taskId)
+    {
         var restTemplate = new RestTemplate();
-        String url = BASE_URL + "score_answer/task_student/" + taskId + "/" + studentId;
+        String url = BASE_URL + "score_answer/task/" + taskId + "/student/" + studentId;
         ResponseEntity<String> response;
-        try {
+        try
+        {
             response = restTemplate.getForEntity(url, String.class);
-        } catch (HttpStatusCodeException e) {
+        } catch (HttpStatusCodeException e)
+        {
             return null;
         }
-        if (response.getStatusCode().is2xxSuccessful()) {
-            try {
+        if (response.getStatusCode().is2xxSuccessful())
+        {
+            try
+            {
                 XmlMapper mapper = new XmlMapper();
                 List<Map<String, Object>> gradeJsons = mapper.readValue(response.getBody(),
-                        new TypeReference<List<Map<String, Object>>>() {
+                        new TypeReference<List<Map<String, Object>>>()
+                        {
                         });
                 Integer grade = 0;
-                for (var gradeJson : gradeJsons) {
+                for (var gradeJson : gradeJsons)
+                {
                     grade += Integer.parseInt((String) gradeJson.get("scoreValue"));
                 }
                 return grade;
-            } catch (JsonProcessingException e) {
+            } catch (JsonProcessingException e)
+            {
                 return null;
             }
 
@@ -60,17 +66,20 @@ public class GradeController {
     }
 
     @PostMapping("/")
-    private ResponseEntity<Grade> createGrade(@RequestBody Map<String, String> gradeJson) {
+    private ResponseEntity<Grade> createGrade(@RequestBody Map<String, String> gradeJson)
+    {
         Integer studentId;
         Integer taskId;
         Integer grade = null;
 
-        try {
+        try
+        {
             studentId = Integer.parseInt(gradeJson.get("studentId"));
             taskId = Integer.parseInt(gradeJson.get("taskId"));
             if (gradeJson.get("grade") != null)
                 grade = Integer.parseInt(gradeJson.get("grade"));
-        } catch (Exception e) {
+        } catch (Exception e)
+        {
             return ResponseEntity.badRequest().build();
         }
 
@@ -78,7 +87,8 @@ public class GradeController {
         if (gradeRepository.findById(id).isPresent())
             return ResponseEntity.badRequest().build();
 
-        if (grade == null) {
+        if (grade == null)
+        {
             grade = calculateGrade(studentId, taskId);
 
             if (grade == null)
@@ -95,8 +105,9 @@ public class GradeController {
         return ResponseEntity.created(uri).body(gradeObj);
     }
 
-    @GetMapping("/{taskId}/{studentId}")
-    private ResponseEntity<Grade> listGradesByTaskStudentId(@PathVariable Integer taskId, @PathVariable Integer studentId) {
+    @GetMapping("/task/{taskId}/student/{studentId}")
+    private ResponseEntity<Grade> listGradesByTaskStudentId(@PathVariable Integer taskId, @PathVariable Integer studentId)
+    {
         Optional<Grade> gradeOpt = gradeRepository.findById(new GradePK(taskId, studentId));
         if (gradeOpt.isEmpty())
             return ResponseEntity.notFound().build();
@@ -105,39 +116,38 @@ public class GradeController {
     }
 
     @GetMapping("/task/{taskId}")
-    private ResponseEntity<Iterable<Grade>> listGradesByTaskId(@PathVariable Integer taskId) {
+    private ResponseEntity<Iterable<Grade>> listGradesByTaskId(@PathVariable Integer taskId)
+    {
         Iterable<Grade> foundGrades = gradeRepository.findByTaskId(taskId);
-        int count = 0;
-        for (var grade : foundGrades)
-            count++;
-        if (count == 0)
+        if (((Collection<?>) foundGrades).isEmpty())
             return ResponseEntity.notFound().build();
         return ResponseEntity.ok(foundGrades);
     }
 
     @GetMapping("/student/{studentId}")
-    private ResponseEntity<Iterable<Grade>> listGradesByStudentId(@PathVariable Integer studentId) {
+    private ResponseEntity<Iterable<Grade>> listGradesByStudentId(@PathVariable Integer studentId)
+    {
         Iterable<Grade> foundGrades = gradeRepository.findByStudentId(studentId);
-        int count = 0;
-        for (var grade : foundGrades)
-            count++;
-        if (count == 0)
+        if (((Collection<?>) foundGrades).isEmpty())
             return ResponseEntity.notFound().build();
         return ResponseEntity.ok(foundGrades);
     }
 
-    @PutMapping("/{taskIdPath}/{studentIdPath}")
+    @PutMapping("/task/{taskIdPath}/student/{studentIdPath}")
     private ResponseEntity<Grade> updateGrade(@RequestBody Map<String, String> gradeJson,
-                                              @PathVariable Integer taskIdPath, @PathVariable Integer studentIdPath) {
+                                              @PathVariable Integer taskIdPath, @PathVariable Integer studentIdPath)
+    {
         Integer studentId;
         Integer taskId;
         Integer grade;
 
-        try {
+        try
+        {
             studentId = Integer.parseInt(gradeJson.get("studentId"));
             taskId = Integer.parseInt(gradeJson.get("taskId"));
             grade = Integer.parseInt(gradeJson.get("grade"));
-        } catch (Exception e) {
+        } catch (Exception e)
+        {
             return ResponseEntity.badRequest().build();
         }
 
@@ -157,8 +167,9 @@ public class GradeController {
         return ResponseEntity.ok(gradeObj);
     }
 
-    @DeleteMapping("/{taskId}/{studentId}")
-    private ResponseEntity<Grade> deleteGrade(@PathVariable Integer taskId, @PathVariable Integer studentId) {
+    @DeleteMapping("/task/{taskId}/student/{studentId}")
+    private ResponseEntity<Grade> deleteGrade(@PathVariable Integer taskId, @PathVariable Integer studentId)
+    {
         GradePK id = new GradePK(taskId, studentId);
         if (gradeRepository.findById(id).isEmpty())
             return ResponseEntity.notFound().build();

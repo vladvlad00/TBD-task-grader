@@ -11,33 +11,32 @@ import java.net.URI;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(path="/sheet")
-public class SheetController {
-    
+@RequestMapping(path = "/sheet")
+public class SheetController
+{
+
     @Autowired
     private SheetRepository sheetRepository;
-    
+
     @PostMapping
     public ResponseEntity<Sheet> createSheet(@RequestBody Sheet sheet)
     {
-        if(sheet.getId() != null && sheetRepository.findById(sheet.getId()).isPresent())
+        if (sheet.getId() != null && sheetRepository.findById(sheet.getId()).isPresent())
             return ResponseEntity.badRequest().build();
-        
+
         Sheet createdSheet = sheetRepository.save(sheet);
 
 
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}").buildAndExpand(createdSheet.getId()).toUri();
-        
+
         return ResponseEntity.created(uri).body(createdSheet);
     }
 
     @GetMapping("/all")
     public ResponseEntity<Iterable<Sheet>> listAllSheets()
     {
-        Iterable<Sheet> foundSheets =sheetRepository.findAll();
-        if (foundSheets == null)
-            return ResponseEntity.notFound().build();
+        Iterable<Sheet> foundSheets = sheetRepository.findAll();
         return ResponseEntity.ok(foundSheets);
     }
 
@@ -60,9 +59,6 @@ public class SheetController {
             return ResponseEntity.notFound().build();
 
         Sheet updatedSheet = sheetRepository.save(sheet);
-
-        if (updatedSheet == null)
-            return ResponseEntity.notFound().build();
 
         return ResponseEntity.ok(updatedSheet);
     }

@@ -22,7 +22,8 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/sheet_student")
-public class SheetStudentController {
+public class SheetStudentController
+{
     @Autowired
     private SheetRepository sheetRepository;
 
@@ -32,7 +33,8 @@ public class SheetStudentController {
     private final String BASE_URL = "https://tbd-dev.herokuapp.com/";
 
     @PostMapping("/")
-    private ResponseEntity<SheetStudent> createSheetStudent(@RequestBody Map<String, Integer> sheetStudent) {
+    private ResponseEntity<SheetStudent> createSheetStudent(@RequestBody Map<String, Integer> sheetStudent)
+    {
         Integer sheetId = sheetStudent.get("sheetId");
         Integer studentId = sheetStudent.get("studentId");
 
@@ -45,16 +47,19 @@ public class SheetStudentController {
 
         var restTemplate = new RestTemplate();
         String url = BASE_URL + "student/" + studentId;
-        
+
         ResponseEntity<String> response;
-        
-        try{
+
+        try
+        {
             response = restTemplate.getForEntity(url, String.class);
-        }catch(HttpStatusCodeException e){
+        } catch (HttpStatusCodeException e)
+        {
             return ResponseEntity.notFound().build();
         }
-            
-        if (response.getStatusCode().is4xxClientError()) {
+
+        if (response.getStatusCode().is4xxClientError())
+        {
             return ResponseEntity.badRequest().build();
         }
 
@@ -67,24 +72,23 @@ public class SheetStudentController {
 
         newSheetStudent = sheetStudentRepository.save(newSheetStudent);
 
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{sheetId}/{studentId}")
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/sheet/{sheetId}/student/{studentId}")
                 .buildAndExpand(sheetId, studentId).toUri();
 
         return ResponseEntity.created(uri).body(newSheetStudent);
     }
 
     @GetMapping("/all")
-    public ResponseEntity<Iterable<SheetStudent>> listAllSheetTasks() {
+    public ResponseEntity<Iterable<SheetStudent>> listAllSheetTasks()
+    {
         Iterable<SheetStudent> foundSheetStudents = sheetStudentRepository.findAll();
-        if (foundSheetStudents == null) {
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(foundSheetStudents);
     }
 
-    @GetMapping("/sheet/{sheet_id}")
-    public ResponseEntity<Iterable<SheetStudent>> listBySheetId(@PathVariable Integer sheet_id) {
-        var foundSheetStudent = sheetStudentRepository.findAllByIdSheetId(sheet_id);
+    @GetMapping("/sheet/{sheetId}")
+    public ResponseEntity<Iterable<SheetStudent>> listBySheetId(@PathVariable Integer sheetId)
+    {
+        var foundSheetStudent = sheetStudentRepository.findAllByIdSheetId(sheetId);
 
         if (((Collection<?>) foundSheetStudent).size() == 0)
             return ResponseEntity.notFound().build();
@@ -92,9 +96,10 @@ public class SheetStudentController {
         return ResponseEntity.ok(foundSheetStudent);
     }
 
-    @GetMapping("/student/{student_id}")
-    public ResponseEntity<Iterable<SheetStudent>> listByStudentId(@PathVariable Integer student_id) {
-        var foundSheetStudent = sheetStudentRepository.findAllByIdStudentId(student_id);
+    @GetMapping("/student/{studentId}")
+    public ResponseEntity<Iterable<SheetStudent>> listByStudentId(@PathVariable Integer studentId)
+    {
+        var foundSheetStudent = sheetStudentRepository.findAllByIdStudentId(studentId);
 
         if (((Collection<?>) foundSheetStudent).size() == 0)
             return ResponseEntity.notFound().build();
@@ -102,12 +107,11 @@ public class SheetStudentController {
         return ResponseEntity.ok(foundSheetStudent);
     }
 
-    @DeleteMapping("/")
-    public ResponseEntity<SheetStudent> deleteSheetTask(@RequestBody Map<String, Integer> sheetTask) {
-        Integer sheetId = sheetTask.get("sheetId");
-        Integer studentId = sheetTask.get("studentId");
-
-        if (sheetId == null || studentId == null) {
+    @DeleteMapping("/sheet/{sheetId}/student/{studentId}")
+    public ResponseEntity<SheetStudent> deleteSheetStudent(@PathVariable Integer sheetId, @PathVariable Integer studentId)
+    {
+        if (sheetId == null || studentId == null)
+        {
             return ResponseEntity.badRequest().build();
         }
 
